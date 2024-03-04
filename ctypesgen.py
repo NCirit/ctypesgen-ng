@@ -15,16 +15,19 @@ anon_enums = {}
 declared = set()
 
 print_ = print
+output_file_created = False
 
 def print(*pargs, **pkwargs):
-    global args
-    if args.output is None:
+    global args, output_file_created
+    if args.output is None or "file" in pkwargs.keys():
         print_(*pargs, **pkwargs)
     else:
-        with open(args.output, "a+") as fl:
+        mode = "a+"
+        if not output_file_created:
+            mode = "w"
+            output_file_created = True
+        with open(args.output, mode) as fl:
             print_(*pargs, file=fl, **pkwargs)
-
-
 
 def main():
     global args
@@ -116,12 +119,13 @@ class Param(object):
 
 
 class StructOrUnion(object):
-    def __init__(self, location, name, fields, is_union, is_definition, anon_num=None):
+    def __init__(self, location, name, fields, is_union, is_definition, size = 0, anon_num=None):
         self.location = location
         self.name = name
         self.fields = fields
         self.is_union = is_union
         self.is_definition = is_definition
+        self.size = size
         self.anon_num = anon_num
 
         if self.is_union:
@@ -147,21 +151,37 @@ class StructOrUnion(object):
 
     def print_definition(self):
         if self.fields:
+            print("{}._pack_ = 1".format(self.class_name))
             print("%s._fields_ = [" % self.class_name)
+            current_offset = 0
+            pad_index = 0
+            self.fields = sorted(self.fields, key = lambda x: x.offset)
             for field in self.fields:
                 ctype = clang_type_to_ctype(field.type)
+                if current_offset < field.offset:
+                    pad_size = field.offset - current_offset
+                    current_offset += pad_size
+                    print("    ('__pad{}__', ctypes.c_int8 * {}),".format(pad_index, pad_size))
+                    pad_index += 1
+                current_offset += field.size
                 if field.width is None:
                     print("    ('%s', %s)," % (field.name, ctype))
                 else:
                     print("    ('%s', %s, %s)," % (field.name, ctype, field.width))
+            if self.size > current_offset:
+                pad_size = self.size - current_offset
+                print("    ('pad{}', {}),".format(pad_index, ctypes.c_int8 * pad_size))
+            
             print("]")
 
 
 class Field(object):
-    def __init__(self, name, type, width):
+    def __init__(self, name, type, width, size, offset):
         self.name = name
         self.type = type
         self.width = width
+        self.size = size
+        self.offset = offset
 
 
 class Typedef(object):
@@ -244,11 +264,13 @@ def walk(node):
         is_union = node.kind == CursorKind.UNION_DECL
         is_definition = node.is_definition()
         if isValidSpelling(node.spelling):
-            return StructOrUnion(node.location, node.spelling, fields, is_union, is_definition)
+            return StructOrUnion(node.location, node.spelling, fields, \
+                is_union, is_definition, size=node.type.get_size())
         else:
             anon_records = anon_unions if is_union else anon_structs
             record = StructOrUnion(node.location, None, fields, is_union,
-                                   is_definition, len(anon_records) + 1)
+                is_definition, size=node.type.get_size(), \
+                anon_num=len(anon_records) + 1)
             anon_records[node.hash] = record
             return record
     elif node.kind == CursorKind.FIELD_DECL:
@@ -257,7 +279,7 @@ def walk(node):
             if top and hasattr(top, 'print'):
                 print_decl(top)
         width = node.get_bitfield_width() if node.is_bitfield() else None
-        return Field(node.spelling, node.type, width)
+        return Field(node.spelling, node.type, width, node.type.get_size(), node.get_field_offsetof()//8)
     elif node.kind == CursorKind.ENUM_DECL:
         constants = []
         for c in node.get_children():
@@ -279,7 +301,7 @@ def walk(node):
 
 
 def print_decl(decl):
-    if not decl.location or decl.location.file.name not in args.headers:
+    if not decl.location or os.path.abspath(decl.location.file.name) not in args.headers:
         if isinstance(decl, Function) or isinstance(decl, Var) or args.ignore_included:
             return
 
@@ -311,7 +333,7 @@ SPECIAL_TYPEDEFS = {
     'size_t': 'ctypes.c_size_t',
     'ssize_t': 'ctypes.c_ssize_t',
     'wchar_t': 'ctypes.c_wchar',
-    'ptrdiff_t': 'ctypes.c_void_p',
+    'ptrdiff_t': 'ctypes.c_ssize_t',
     'uintptr_t': 'ctypes.c_void_p',
     # It's not nice to be so intimate with the va_list internals, but oh
     # well, you do what you have to.
