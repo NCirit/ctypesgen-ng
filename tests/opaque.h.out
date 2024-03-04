@@ -8,6 +8,7 @@ class struct_handle(ctypes.Structure):
 
 typedef_handle_t = struct_handle
 
+struct_handle._pack_ = 1
 struct_handle._fields_ = [
     ('name', ctypes.c_char_p),
 ]

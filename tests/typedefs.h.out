@@ -26,6 +26,7 @@ libtest.best_color.argtypes = []
 
 class struct_point(ctypes.Structure):
     pass
+struct_point._pack_ = 1
 struct_point._fields_ = [
     ('x', ctypes.c_int),
     ('y', ctypes.c_int),
@@ -42,6 +43,7 @@ libtest.add_points2.argtypes = [ctypes.POINTER(typedef_point_t), ctypes.POINTER(
 
 class struct_point2_t(ctypes.Structure):
     pass
+struct_point2_t._pack_ = 1
 struct_point2_t._fields_ = [
     ('x', ctypes.c_int),
     ('y', ctypes.c_int),
@@ -59,6 +61,7 @@ typedef_color2_t = enum_color2_t
 
 class union_type_t(ctypes.Union):
     pass
+union_type_t._pack_ = 1
 union_type_t._fields_ = [
     ('s', ctypes.c_char_p),
     ('i', ctypes.c_int),

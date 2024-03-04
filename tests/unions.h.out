@@ -5,6 +5,7 @@ libtest = ctypes.CDLL('libtest.so')
 
 class union_simple(ctypes.Union):
     pass
+union_simple._pack_ = 1
 union_simple._fields_ = [
     ('x', ctypes.c_int),
     ('y', ctypes.c_float),
@@ -17,6 +18,7 @@ class union_empty(ctypes.Union):
 
 class union_nested(ctypes.Union):
     pass
+union_nested._pack_ = 1
 union_nested._fields_ = [
     ('s', union_simple),
     ('z', ctypes.c_longlong),
@@ -35,6 +37,7 @@ libtest.binary2.argtypes = [ctypes.POINTER(union_simple), ctypes.POINTER(union_s
 
 class union_bitty(ctypes.Union):
     pass
+union_bitty._pack_ = 1
 union_bitty._fields_ = [
     ('a', ctypes.c_int, 1),
     ('b', ctypes.c_int, 2),
@@ -46,6 +49,7 @@ union_bitty._fields_ = [
 
 class struct_tagged_union(ctypes.Structure):
     pass
+struct_tagged_union._pack_ = 1
 struct_tagged_union._fields_ = [
     ('type', ctypes.c_int),
     ('u', union_simple),

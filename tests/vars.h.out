@@ -7,6 +7,7 @@ var_errno = ctypes.c_int.in_dll(libtest, 'errno')
 
 class __anon_struct1(ctypes.Structure):
     pass
+__anon_struct1._pack_ = 1
 __anon_struct1._fields_ = [
     ('a', ctypes.c_int),
     ('b', ctypes.c_int),

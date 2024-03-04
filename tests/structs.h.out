@@ -5,6 +5,7 @@ libtest = ctypes.CDLL('libtest.so')
 
 class struct_point(ctypes.Structure):
     pass
+struct_point._pack_ = 1
 struct_point._fields_ = [
     ('x', ctypes.c_int),
     ('y', ctypes.c_int),
@@ -17,6 +18,7 @@ class struct_empty(ctypes.Structure):
 
 class struct_nested(ctypes.Structure):
     pass
+struct_nested._pack_ = 1
 struct_nested._fields_ = [
     ('p', struct_point),
     ('z', ctypes.c_int),
@@ -35,6 +37,7 @@ libtest.add_points2.argtypes = [ctypes.POINTER(struct_point), ctypes.POINTER(str
 
 class struct_bitty(ctypes.Structure):
     pass
+struct_bitty._pack_ = 1
 struct_bitty._fields_ = [
     ('a', ctypes.c_int, 1),
     ('b', ctypes.c_int, 2),
@@ -46,6 +49,7 @@ struct_bitty._fields_ = [
 
 class struct_list(ctypes.Structure):
     pass
+struct_list._pack_ = 1
 struct_list._fields_ = [
     ('next', ctypes.POINTER(struct_list)),
 ]
