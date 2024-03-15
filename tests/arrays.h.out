@@ -1,11 +1,15 @@
 import ctypes
+import ctypes.util
+import os
 
-libtest = ctypes.CDLL('libtest.so')
+os.environ['LIBRARY_PATH'] = os.path.dirname(os.path.abspath(__file__))
+test_path = ctypes.util.find_library('test')
+test = ctypes.CDLL(os.path.abspath(test_path))
 
 typedef_my_complex = (ctypes.c_double * 2)
 
-libtest.my_main.restype = ctypes.c_int
-libtest.my_main.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_char_p)]
+test.my_main.restype = ctypes.c_int
+test.my_main.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_char_p)]
 
 typedef_my_complex_3d_point = ((ctypes.c_double * 2) * 3)
 

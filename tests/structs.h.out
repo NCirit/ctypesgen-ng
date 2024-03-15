@@ -1,6 +1,10 @@
 import ctypes
+import ctypes.util
+import os
 
-libtest = ctypes.CDLL('libtest.so')
+os.environ['LIBRARY_PATH'] = os.path.dirname(os.path.abspath(__file__))
+test_path = ctypes.util.find_library('test')
+test = ctypes.CDLL(os.path.abspath(test_path))
 
 
 class struct_point(ctypes.Structure):
@@ -28,11 +32,11 @@ struct_nested._fields_ = [
 class struct_forward_declaration(ctypes.Structure):
     pass
 
-libtest.add_points.restype = struct_point
-libtest.add_points.argtypes = [struct_point, struct_point]
+test.add_points.restype = struct_point
+test.add_points.argtypes = [struct_point, struct_point]
 
-libtest.add_points2.restype = None
-libtest.add_points2.argtypes = [ctypes.POINTER(struct_point), ctypes.POINTER(struct_point)]
+test.add_points2.restype = None
+test.add_points2.argtypes = [ctypes.POINTER(struct_point), ctypes.POINTER(struct_point)]
 
 
 class struct_bitty(ctypes.Structure):

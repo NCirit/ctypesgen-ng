@@ -70,9 +70,13 @@ def main():
     internal_includes = '%s/lib/clang/%s/include' % (clang_prefix, version)
 
     print("import ctypes")
+    print("import ctypes.util")
+    print("import os")
     print()
     lib = os.path.basename(args.library).split('.', 1)[0]
-    print("%s = ctypes.CDLL('%s')" % (lib, args.library))
+    print("os.environ['LIBRARY_PATH'] = os.path.dirname(os.path.abspath(__file__))")
+    print("{}_path = ctypes.util.find_library('{}')".format(lib, lib))
+    print("{} = ctypes.CDLL(os.path.abspath({}_path))".format(lib, lib))
 
     args.headers = [os.path.abspath(header) for header in args.headers]
     unsaved_file = '\n'.join('#include "%s"' % header for header in args.headers)

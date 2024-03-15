@@ -1,6 +1,10 @@
 import ctypes
+import ctypes.util
+import os
 
-libtest = ctypes.CDLL('libtest.so')
+os.environ['LIBRARY_PATH'] = os.path.dirname(os.path.abspath(__file__))
+test_path = ctypes.util.find_library('test')
+test = ctypes.CDLL(os.path.abspath(test_path))
 
 
 class struct_handle(ctypes.Structure):
@@ -19,8 +23,8 @@ class struct_opaque(ctypes.Structure):
 
 typedef_opaque_t = ctypes.POINTER(struct_opaque)
 
-libtest.opaque_new.restype = typedef_opaque_t
-libtest.opaque_new.argtypes = []
+test.opaque_new.restype = typedef_opaque_t
+test.opaque_new.argtypes = []
 
-libtest.opaque_free.restype = None
-libtest.opaque_free.argtypes = [typedef_opaque_t]
+test.opaque_free.restype = None
+test.opaque_free.argtypes = [typedef_opaque_t]

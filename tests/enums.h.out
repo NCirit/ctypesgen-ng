@@ -1,6 +1,10 @@
 import ctypes
+import ctypes.util
+import os
 
-libtest = ctypes.CDLL('libtest.so')
+os.environ['LIBRARY_PATH'] = os.path.dirname(os.path.abspath(__file__))
+test_path = ctypes.util.find_library('test')
+test = ctypes.CDLL(os.path.abspath(test_path))
 
 enum_color = ctypes.c_uint
 enum_constant_RED = 0
@@ -13,11 +17,11 @@ enum_constant_CYAN = 4
 enum_constant_MAGENTA = 5
 enum_constant_BLACK = 10
 
-libtest.rank_color.restype = ctypes.c_int
-libtest.rank_color.argtypes = [enum_color]
+test.rank_color.restype = ctypes.c_int
+test.rank_color.argtypes = [enum_color]
 
-libtest.best_color.restype = enum_color
-libtest.best_color.argtypes = []
+test.best_color.restype = enum_color
+test.best_color.argtypes = []
 
 __anon_enum1 = ctypes.c_uint
 enum_constant_READ = 0

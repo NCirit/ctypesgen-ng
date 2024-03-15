@@ -1,14 +1,18 @@
 import ctypes
+import ctypes.util
+import os
 
-libtest = ctypes.CDLL('libtest.so')
+os.environ['LIBRARY_PATH'] = os.path.dirname(os.path.abspath(__file__))
+test_path = ctypes.util.find_library('test')
+test = ctypes.CDLL(os.path.abspath(test_path))
 
 typedef_gint = ctypes.c_int
 
-libtest.gint_to_int.restype = ctypes.c_int
-libtest.gint_to_int.argtypes = [typedef_gint]
+test.gint_to_int.restype = ctypes.c_int
+test.gint_to_int.argtypes = [typedef_gint]
 
-libtest.int_to_gint.restype = typedef_gint
-libtest.int_to_gint.argtypes = [ctypes.c_int]
+test.int_to_gint.restype = typedef_gint
+test.int_to_gint.argtypes = [ctypes.c_int]
 
 enum_color = ctypes.c_uint
 enum_constant_RED = 0
@@ -17,11 +21,11 @@ enum_constant_BLUE = 2
 
 typedef_color_t = enum_color
 
-libtest.rank_color.restype = ctypes.c_int
-libtest.rank_color.argtypes = [typedef_color_t]
+test.rank_color.restype = ctypes.c_int
+test.rank_color.argtypes = [typedef_color_t]
 
-libtest.best_color.restype = typedef_color_t
-libtest.best_color.argtypes = []
+test.best_color.restype = typedef_color_t
+test.best_color.argtypes = []
 
 
 class struct_point(ctypes.Structure):
@@ -34,11 +38,11 @@ struct_point._fields_ = [
 
 typedef_point_t = struct_point
 
-libtest.add_points.restype = typedef_point_t
-libtest.add_points.argtypes = [typedef_point_t, typedef_point_t]
+test.add_points.restype = typedef_point_t
+test.add_points.argtypes = [typedef_point_t, typedef_point_t]
 
-libtest.add_points2.restype = None
-libtest.add_points2.argtypes = [ctypes.POINTER(typedef_point_t), ctypes.POINTER(typedef_point_t)]
+test.add_points2.restype = None
+test.add_points2.argtypes = [ctypes.POINTER(typedef_point_t), ctypes.POINTER(typedef_point_t)]
 
 
 class struct_point2_t(ctypes.Structure):
@@ -72,5 +76,5 @@ typedef_type_t = union_type_t
 
 typedef_point_pointer_t = ctypes.POINTER(struct_point)
 
-libtest.process.restype = None
-libtest.process.argtypes = [typedef_point_pointer_t]
+test.process.restype = None
+test.process.argtypes = [typedef_point_pointer_t]

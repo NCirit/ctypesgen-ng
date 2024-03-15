@@ -7,7 +7,7 @@ fi
 failed=0
 for file in $TESTS; do
 	echo "$file"
-	./ctypesgen.py --clang-flags \"-Wno-error=implicit-int\" --ignore-included --library libtest.so --headers "$file" > $file.out
+	./ctypesgen.py --clang-flags \"-Wno-error=implicit-int\" --ignore-included --library test.so --headers "$file" > $file.out
 done
 
 exit $failed

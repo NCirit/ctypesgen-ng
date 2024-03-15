@@ -1,63 +1,67 @@
 import ctypes
+import ctypes.util
+import os
 
-libtest = ctypes.CDLL('libtest.so')
+os.environ['LIBRARY_PATH'] = os.path.dirname(os.path.abspath(__file__))
+test_path = ctypes.util.find_library('test')
+test = ctypes.CDLL(os.path.abspath(test_path))
 
-libtest.strcmp.restype = ctypes.c_int
-libtest.strcmp.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+test.strcmp.restype = ctypes.c_int
+test.strcmp.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
 
-libtest.gcd.restype = None
-libtest.gcd.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
+test.gcd.restype = None
+test.gcd.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
 
-libtest.my_strchr.restype = ctypes.c_char_p
-libtest.my_strchr.argtypes = [ctypes.c_char_p, ctypes.c_char]
+test.my_strchr.restype = ctypes.c_char_p
+test.my_strchr.argtypes = [ctypes.c_char_p, ctypes.c_char]
 
-libtest.byte_to_hex.restype = ctypes.c_char_p
-libtest.byte_to_hex.argtypes = [ctypes.c_ubyte]
+test.byte_to_hex.restype = ctypes.c_char_p
+test.byte_to_hex.argtypes = [ctypes.c_ubyte]
 
-libtest.sbyte_to_hex.restype = ctypes.c_char_p
-libtest.sbyte_to_hex.argtypes = [ctypes.c_byte]
+test.sbyte_to_hex.restype = ctypes.c_char_p
+test.sbyte_to_hex.argtypes = [ctypes.c_byte]
 
-libtest.pipe2.restype = ctypes.c_int
-libtest.pipe2.argtypes = [(ctypes.c_int * 2), ctypes.c_int]
+test.pipe2.restype = ctypes.c_int
+test.pipe2.argtypes = [(ctypes.c_int * 2), ctypes.c_int]
 
-libtest.sin.restype = ctypes.c_double
-libtest.sin.argtypes = [ctypes.c_double]
+test.sin.restype = ctypes.c_double
+test.sin.argtypes = [ctypes.c_double]
 
-libtest.cosf.restype = ctypes.c_float
-libtest.cosf.argtypes = [ctypes.c_float]
+test.cosf.restype = ctypes.c_float
+test.cosf.argtypes = [ctypes.c_float]
 
-libtest.strtol.restype = ctypes.c_long
-libtest.strtol.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.c_int]
+test.strtol.restype = ctypes.c_long
+test.strtol.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.c_int]
 
-libtest.strtoll.restype = ctypes.c_longlong
-libtest.strtoll.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.c_int]
+test.strtoll.restype = ctypes.c_longlong
+test.strtoll.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.c_int]
 
-libtest.strtoul.restype = ctypes.c_ulong
-libtest.strtoul.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.c_int]
+test.strtoul.restype = ctypes.c_ulong
+test.strtoul.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.c_int]
 
-libtest.strtoull.restype = ctypes.c_ulonglong
-libtest.strtoull.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.c_int]
+test.strtoull.restype = ctypes.c_ulonglong
+test.strtoull.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.c_int]
 
-libtest.my_memcmp.restype = ctypes.c_int
-libtest.my_memcmp.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_uint]
+test.my_memcmp.restype = ctypes.c_int
+test.my_memcmp.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_uint]
 
-libtest.short_add_with_overflow.restype = ctypes.c_int
-libtest.short_add_with_overflow.argtypes = [ctypes.c_short, ctypes.c_short, ctypes.POINTER(ctypes.c_short)]
+test.short_add_with_overflow.restype = ctypes.c_int
+test.short_add_with_overflow.argtypes = [ctypes.c_short, ctypes.c_short, ctypes.POINTER(ctypes.c_short)]
 
-libtest.unsigned_short_add_with_overflow.restype = ctypes.c_int
-libtest.unsigned_short_add_with_overflow.argtypes = [ctypes.c_ushort, ctypes.c_ushort, ctypes.POINTER(ctypes.c_ushort)]
+test.unsigned_short_add_with_overflow.restype = ctypes.c_int
+test.unsigned_short_add_with_overflow.argtypes = [ctypes.c_ushort, ctypes.c_ushort, ctypes.POINTER(ctypes.c_ushort)]
 
-libtest.getid.restype = ctypes.c_int
-libtest.getid.argtypes = []
+test.getid.restype = ctypes.c_int
+test.getid.argtypes = []
 
-libtest.printf.restype = ctypes.c_int
+test.printf.restype = ctypes.c_int
 
-libtest.execve.restype = ctypes.c_int
-libtest.execve.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.POINTER(ctypes.c_char_p)]
+test.execve.restype = ctypes.c_int
+test.execve.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.POINTER(ctypes.c_char_p)]
 
-libtest.noproto.restype = ctypes.c_int
+test.noproto.restype = ctypes.c_int
 
-libtest.defaultrettype.restype = ctypes.c_int
-libtest.defaultrettype.argtypes = [ctypes.c_char_p]
+test.defaultrettype.restype = ctypes.c_int
+test.defaultrettype.argtypes = [ctypes.c_char_p]
 
-libtest.blasphemy.restype = ctypes.c_int
+test.blasphemy.restype = ctypes.c_int
