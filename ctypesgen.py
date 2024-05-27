@@ -73,7 +73,23 @@ def main():
     print("import os")
     print()
     lib = os.path.basename(args.library).split('.', 1)[0]
-    print("os.environ['LIBRARY_PATH'] = os.path.dirname(os.path.abspath(__file__))")
+
+    print(
+    """
+if not ('LIBRARY_PATH' in os.environ):
+    if 'PYTHONPATH' in os.environ:
+        os.environ['LIBRARY_PATH'] = os.environ['PYTHONPATH']
+    else:
+        os.environ['LIBRARY_PATH'] = os.path.dirname(os.path.abspath(__file__))""")
+
+    print(
+"""
+if os.name == "nt":
+    if 'PYTHONPATH' in os.environ:
+        os.environ['PATH'] += os.pathsep + os.environ['PYTHONPATH']
+    else:
+        os.environ['PATH'] += os.pathsep + os.path.dirname(os.path.abspath(__file__))""")
+
     print("{}_path = ctypes.util.find_library('{}')".format(lib, lib))
     print("{} = ctypes.CDLL(os.path.abspath({}_path))".format(lib, lib))
 
