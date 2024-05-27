@@ -53,7 +53,6 @@ def main():
     args.clang_path = os.path.abspath(args.clang_path)
     clang_prefix = os.path.dirname(os.path.dirname(args.clang_path))
 
-    clang.cindex.Config.set_library_path(os.path.join(clang_prefix, 'lib'))
     index = clang.cindex.Index.create()
 
     # We need to find the internal clang header files, which live in
