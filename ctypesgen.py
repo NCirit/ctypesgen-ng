@@ -46,6 +46,11 @@ def main():
         help="don't generate bindings for declarations in included files")
     parser.add_argument('--std', choices=('c89', 'c99', 'c11'), default='c11')
     parser.add_argument("--output", default=None, help="By default it outputs to stdout, supply this if you want to write to a file")
+
+    parser.add_argument(
+        '-d', '--dependent-packages', metavar='PACKAGE',
+        help='packages that are being used by bindings', nargs="*", default=[])
+
     args = parser.parse_args()
 
     if not args.clang_path:
@@ -68,6 +73,16 @@ def main():
 
     internal_includes = '%s/lib/clang/%s/include' % (clang_prefix, version)
 
+    print("### This file automatically created by ctypesgen-ng, the commandline parameters passed to it are given below")
+    print("### {}".format(" ".join(sys.argv)))
+    print()
+
+    for dependent_package in args.dependent_packages:
+        print("from {} import *".format(dependent_package))
+
+    if len(args.dependent_packages) > 0:
+        print()
+    
     print("import ctypes")
     print("import ctypes.util")
     print("import os")

@@ -9,7 +9,7 @@ fi
 failed=0
 for file in $TESTS; do
 	echo "$file"
-	if ./ctypesgen.py --clang-flags \"-Wno-error=implicit-int\" --ignore-included --library test.so --headers "$file" | diff "${file}.out" -; then
+	if /app/ctypesgen.py --clang-flags \"-Wno-error=implicit-int\" --ignore-included --library test.so --headers "$file" | diff "${file}.out" -; then
 		echo -e "\033[32mPASSED\033[0m"
 	else
 		echo -e "\033[31mFAILED\033[0m"

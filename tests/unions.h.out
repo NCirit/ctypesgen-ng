@@ -1,3 +1,6 @@
+### This file automatically created by ctypesgen-ng, the commandline parameters passed to it are given below
+### /app/ctypesgen.py --clang-flags "-Wno-error=implicit-int" --ignore-included --library test.so --headers tests/unions.h
+
 import ctypes
 import ctypes.util
 import os
