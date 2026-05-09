@@ -105,8 +105,60 @@ if os.name == "nt":
     else:
         os.environ['PATH'] += os.pathsep + os.path.dirname(os.path.abspath(__file__))""")
 
-    print("{}_path = ctypes.util.find_library('{}')".format(lib, lib))
-    print("{} = ctypes.CDLL(os.path.abspath({}_path))".format(lib, lib))
+    # Generate robust library loading code
+    print("""
+# Try to load library from multiple locations
+def _load_library():
+    import platform
+    import sys
+
+    # Determine library filename based on platform
+    if os.name == 'nt':
+        lib_names = ['{0}.dll', 'lib{0}.dll']
+    elif platform.system() == 'Darwin':
+        lib_names = ['lib{0}.dylib', '{0}.dylib']
+    else:
+        lib_names = ['lib{0}.so', '{0}.so']
+
+    # 1. Try to load from the same directory as this file (for packaged installations)
+    this_dir = os.path.dirname(os.path.abspath(__file__))
+    for lib_name in lib_names:
+        lib_path = os.path.join(this_dir, lib_name.format('{1}'))
+        if os.path.exists(lib_path):
+            try:
+                return ctypes.CDLL(lib_path)
+            except OSError:
+                pass
+
+    # 2. Try system library search paths
+    system_lib = ctypes.util.find_library('{1}')
+    if system_lib:
+        try:
+            return ctypes.CDLL(system_lib)
+        except OSError:
+            pass
+
+    # 3. Try LD_LIBRARY_PATH / DYLD_LIBRARY_PATH / PATH
+    for lib_name in lib_names:
+        try:
+            return ctypes.CDLL(lib_name.format('{1}'))
+        except OSError:
+            pass
+
+    # If all fails, provide helpful error message
+    raise OSError(
+        "Could not load library '{1}'. Tried:\\n"
+        "  1. Same directory as bindings: {{}}\\n"
+        "  2. System library paths\\n"
+        "  3. LD_LIBRARY_PATH/PATH\\n"
+        "\\n"
+        "Make sure lib{1}.so (or .dll/.dylib) is:\\n"
+        "  - In the same directory as this file, or\\n"
+        "  - In a system library path, or\\n"
+        "  - In LD_LIBRARY_PATH (Unix) / PATH (Windows)".format(this_dir)
+    )
+
+{1} = _load_library()""".format(lib, lib))
 
     args.headers = [os.path.abspath(header) for header in args.headers]
     unsaved_file = '\n'.join('#include "%s"' % header for header in args.headers)
