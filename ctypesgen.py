@@ -204,7 +204,7 @@ class StructOrUnion(object):
                     print("    ('%s', %s, %s)," % (field.name, ctype, field.width))
             if self.size > current_offset:
                 pad_size = self.size - current_offset
-                print("    ('pad{}', {}),".format(pad_index, ctypes.c_int8 * pad_size))
+                print("    ('pad{}', ctypes.c_byte * {}),".format(pad_index, pad_size))
             
             print("]")
 
